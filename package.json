@@ -1,0 +1,26 @@
+{
+  "name": "medical-app",
+  "version": "1.0.0",
+  "description": "Need to create Medical products.where user should be able to register and logic and create product types.and can create new products and with selected product types\r and user can like and dislike product. and get most liked products.and recently registered products. and user can comment on products.\r need to add field s like expiry dates in product",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "watch": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kedar Vyas",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-async-handler": "^1.2.0",
+    "express-mongo-sanitize": "^2.2.0",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.0.3",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.1",
+    "sharp": "^0.32.0"
+  }
+}
