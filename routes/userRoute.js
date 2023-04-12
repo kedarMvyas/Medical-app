@@ -1,3 +1,5 @@
+// this is routes for all the user's related requests
+
 const express = require("express");
 const detailValidation = require("../middlewares/detailValidation");
 const userController = require("../controllers/userController");

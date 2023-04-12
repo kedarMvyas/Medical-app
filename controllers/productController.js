@@ -2,28 +2,108 @@ const asyncHandler = require("express-async-handler");
 const AppError = require("../ErrorHandlers/AppError");
 const Product = require("../models/product");
 const ProductType = require("../models/productType");
-const multer = require("multer");
 
 ////////////////////////////////////////////////////////////////
 
+// creates product with image upload and other data
 const createProduct = asyncHandler(async (req, res, next) => {
-  const { name, productType, recommendedDose, price, expiryDate, image } =
-    req.body;
-  //  user-id: req.user.id
+  const { name, productType, recommendedDose, price, expiryDate } = req.body;
+  let typeID;
+  const imageFiles = req.files["image"];
+
+  const productExists = await Product.find({ name, user_id: req.user.id });
+  if (productExists.length > 0)
+    return next(new AppError("Product Already Exists"));
+
+  const typeExists = await ProductType.findOne({ name: productType });
+  if (!typeExists) {
+    return next(new AppError("This product type does not exists", 400));
+  } else {
+    typeID = typeExists._id;
+  }
+
+  const created = await Product.create({
+    user_id: req.user.id,
+    name,
+    productType: typeID,
+    recommendedDose,
+    price,
+    expiryDate,
+    image: imageFiles.map((file) => file.filename),
+  });
+  if (created) {
+    return res.status(200).json({
+      name,
+      productType,
+      msg: "Product created successfully",
+    });
+  } else {
+    return next(new AppError("Something went wrong", 500));
+  }
 });
 
 ////////////////////////////////////////////////////////////////
 
-const updateProduct = asyncHandler(async (req, res, next) => {});
+// can update data with an id in parameter
+const updateProductById = asyncHandler(async (req, res, next) => {
+  const id = req.params.id;
+  let typeID;
+  const file = req.files;
+  const { name, recommendedDose, price, productType, expiryDate } = req.body;
+  if (!id) return next(new AppError("Product Id is not present", 400));
+
+  const productExists = await Product.findById(id);
+  if (!productExists) return next(new AppError("Product does not exist", 400));
+
+  if (productExists.user_id.toString() !== req.user.id)
+    return next(new AppError("User don't have access to update product", 401));
+
+  const typeExists = await ProductType.findOne({ name: productType });
+  if (!typeExists) {
+    return next(new AppError("This product type does not exists", 400));
+  } else {
+    typeID = typeExists._id;
+  }
+
+  const updatedProduct = await Product.findByIdAndUpdate(
+    id,
+    {
+      name,
+      productType: typeID,
+      recommendedDose,
+      price,
+      expiryDate,
+      image: file.filename,
+    },
+    {
+      new: true,
+    }
+  );
+
+  if (updatedProduct) {
+    return res.status(200).json({
+      name,
+      productType,
+      msg: "Product updated successfully",
+    });
+  } else {
+    return next(new AppError("Something went wrong", 500));
+  }
+});
 
 ////////////////////////////////////////////////////////////////
 
-const deleteProduct = asyncHandler(async (req, res, next) => {
-  const name = req.body.name;
-  const productExists = await Product.findOne({ name });
+// delete product with id in a parameter
+const deleteProductById = asyncHandler(async (req, res, next) => {
+  const id = req.params.id;
+  const productExists = await Product.findById(id);
   if (!productExists) return next(new AppError("Product does not exists", 400));
 
-  const done = await Product.deleteOne({ name });
+  if (productExists.user_id.toString() !== req.user.id) {
+    return next(new AppError("User don't have access to delete product", 401));
+  }
+
+  const done = await Product.deleteOne(productExists);
   if (done) {
     return res.status(200).json({
       msg: "Product have been successfully deleted",
@@ -35,6 +115,7 @@ const deleteProduct = asyncHandler(async (req, res, next) => {
 
 ////////////////////////////////////////////////////////////////
 
+// gets all products
 const getAllProducts = asyncHandler(async (req, res, next) => {
   const allProducts = await Product.find();
   if (allProducts) {
@@ -48,12 +129,14 @@ const getAllProducts = asyncHandler(async (req, res, next) => {
 
 ////////////////////////////////////////////////////////////////
 
+// gets most recently registered product
+// also have a query option to limit resource shown
 const mostRecentProduct = asyncHandler(async (req, res, next) => {
-  const recentProduct = await Product.findOne(
-    {}, // retrieves all objects as it matches our query
-    {}, // retrieves all fields of all products
-    { sort: { createdAt: -1 } }
-  );
+  const query = req.query.limit || 1;
+  const recentProduct = await Product.find({})
+    .sort({ createdAt: -1 })
+    .limit(+query);
+
   if (recentProduct) {
     return res.status(200).json({
       recentProduct,
@@ -67,8 +150,8 @@ const mostRecentProduct = asyncHandler(async (req, res, next) => {
 
 module.exports = {
   createProduct,
-  updateProduct,
-  deleteProduct,
+  updateProductById,
+  deleteProductById,
   getAllProducts,
   mostRecentProduct,
 };

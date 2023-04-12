@@ -1,3 +1,5 @@
+// this is a dislike model which will store all the data of user's dislikes
+
 const mongoose = require("mongoose");
 
 const disLikeSchema = new mongoose.Schema({

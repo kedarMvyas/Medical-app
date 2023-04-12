@@ -1,3 +1,5 @@
+// this is a model for user with all the neccessary details
+
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 

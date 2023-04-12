@@ -1,3 +1,5 @@
+// this is a model for product type which will store only types of product
+
 const mongoose = require("mongoose");
 
 const productTypeSchema = new mongoose.Schema({

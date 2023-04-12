@@ -5,6 +5,7 @@ const Product = require("../models/product");
 
 ////////////////////////////////////////////////////////////////
 
+// creates type of product
 const createProductType = asyncHandler(async (req, res, next) => {
   const name = req.body.name;
   if (!name) return next(new AppError("Name is not mentioned", 400));
@@ -28,6 +29,7 @@ const createProductType = asyncHandler(async (req, res, next) => {
 
 ////////////////////////////////////////////////////////////////
 
+// get all product types
 const getAllProductType = asyncHandler(async (req, res, next) => {
   const allProductTypes = await ProductType.find();
   if (allProductTypes) {
@@ -41,17 +43,21 @@ const getAllProductType = asyncHandler(async (req, res, next) => {
 
 ////////////////////////////////////////////////////////////////
 
-const deleteProductType = asyncHandler(async (req, res, next) => {
-  const name = req.body.name;
-  if (!name)
+// can delete product type only if there is no product registered on this type
+const deleteProductTypeById = asyncHandler(async (req, res, next) => {
+  const id = req.params.id;
+  if (!id)
     return next(new AppError("Specify product type name to delete", 400));
 
-  const productType = await ProductType.findOne({ name });
+  const productType = await ProductType.findOne({ _id: id });
+  console.log(productType);
   if (!productType)
     return next(new AppError("Product type does not exist", 400));
 
   //   if any product exist on this product type, can't delete it
-  const existingProduct = await Product.findOne({ productType: name });
+  const existingProduct = await Product.findOne({
+    productType: productType._id,
+  });
   if (existingProduct) {
     return next(
       new AppError(
@@ -73,6 +79,7 @@ const deleteProductType = asyncHandler(async (req, res, next) => {
 
 ////////////////////////////////////////////////////////////////
 
+// gets all product by product type
 const productsByProductType = asyncHandler(async (req, res, next) => {
   const name = req.body.name;
   if (!name) return next(new AppError("Product type name field is empty"), 400);
@@ -82,10 +89,12 @@ const productsByProductType = asyncHandler(async (req, res, next) => {
     return next(new AppError("Product type does not exist", 400));
 
   const allProductsByProductType = await Product.find({
-    productType: productType.id,
+    productType: productType._id,
   });
-  if (allProductsByProductType.length === 0)
-    return next(new AppError("No products exists of this product type", 204));
+
+  if (allProductsByProductType.length == 0) {
+    return next(new AppError("No products exists of this product type", 404));
+  }
 
   return res.status(200).json({
     allProductsByProductType,
@@ -96,7 +105,7 @@ const productsByProductType = asyncHandler(async (req, res, next) => {
 
 module.exports = {
   createProductType,
-  deleteProductType,
+  deleteProductTypeById,
   getAllProductType,
   productsByProductType,
 };

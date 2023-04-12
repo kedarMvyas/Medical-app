@@ -18,7 +18,7 @@ const detailValidation = asyncHandler(async (req, res, next) => {
   if (missingValues.length > 0) {
     return next(
       new AppError(
-        `required missing values :${missingValues} is neccessary to be filled`,
+        `required missing values : ${missingValues} is neccessary to be filled`,
         400
       )
     );

@@ -17,6 +17,7 @@ const hashToken = (token) => {
   sha256.update(token);
   return sha256.digest("hex");
 };
+
 // generates a jwtoken
 const JWTokenGenerator = async (user) => {
   const accessToken = await jwt.sign(
@@ -33,6 +34,7 @@ const JWTokenGenerator = async (user) => {
 
 //////////////////////////////////////////////////////////////////////////
 
+// register a user
 const registerUser = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body;
 
@@ -55,6 +57,7 @@ const registerUser = asyncHandler(async (req, res, next) => {
 
 //////////////////////////////////////////////////////////////////////////
 
+// login user with assigning a jwtoken
 const loginUser = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -80,6 +83,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
 
 //////////////////////////////////////////////////////////////////////////
 
+// deletes user only if same user is logged in
 const deleteUser = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
@@ -87,6 +91,9 @@ const deleteUser = asyncHandler(async (req, res, next) => {
   if (!user) {
     return next(new AppError("Email is not registered yet", 400));
   }
+
+  if (req.user.email !== email)
+    return next(new AppError("Can't delete another user", 400));
 
   const passCompare = await bcrypt.compare(password, user.password);
 
@@ -103,6 +110,7 @@ const deleteUser = asyncHandler(async (req, res, next) => {
 
 //////////////////////////////////////////////////////////////////////////
 
+// sends a email with a token for authentication to change password
 const forgotPassword = asyncHandler(async (req, res, next) => {
   const user = await User.findOne({ email: req.user.email });
 
@@ -138,6 +146,7 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
 
 //////////////////////////////////////////////////////////////////////////
 
+// checks forgotpassword token and then resets password
 const resetPassword = asyncHandler(async (req, res, next) => {
   const { password, passwordConfirm } = req.body;
   if (!password || !passwordConfirm) {
