@@ -45,11 +45,25 @@ const registerUser = asyncHandler(async (req, res, next) => {
   });
 
   if (user) {
-    return res.status(200).json({
-      msg: "User successfully created",
-      _id: user._id,
-      email,
-    });
+    // sending email as registered successfully
+
+    const message = `Hey ${user.name}, \n You have successfully registered in our Medical App :) \n  Thanks a lot xD for registering into our application`;
+
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: "You have successfully registered into Medical Application",
+        message,
+      });
+
+      return res.status(200).json({
+        msg: "User successfully created",
+        _id: user._id,
+        email,
+      });
+    } catch (err) {
+      return next(new AppError({ err }, 500));
+    }
   } else {
     return next(new AppError("Something went wrong", 500));
   }
