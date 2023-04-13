@@ -47,7 +47,9 @@ const getAllProductType = asyncHandler(async (req, res, next) => {
 const deleteProductTypeById = asyncHandler(async (req, res, next) => {
   const id = req.params.id;
   if (!id)
-    return next(new AppError("Specify product type name to delete", 400));
+    return next(
+      new AppError("ID is not present in parameter to delete the product", 400)
+    );
 
   const productType = await ProductType.findOne({ _id: id });
   console.log(productType);

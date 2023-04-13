@@ -96,6 +96,8 @@ const updateProductById = asyncHandler(async (req, res, next) => {
 // delete product with id in a parameter
 const deleteProductById = asyncHandler(async (req, res, next) => {
   const id = req.params.id;
+  if (!id) return next(new AppError("id is not present in the parameter"));
+
   const productExists = await Product.findById(id);
   if (!productExists) return next(new AppError("Product does not exists", 400));
 

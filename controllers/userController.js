@@ -75,6 +75,11 @@ const registerUser = asyncHandler(async (req, res, next) => {
 const loginUser = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
+  if (!email || !password)
+    return next(
+      new AppError("Both email and password fields are neccessary", 400)
+    );
+
   const user = await User.findOne({ email });
 
   if (!user) {
@@ -100,6 +105,10 @@ const loginUser = asyncHandler(async (req, res, next) => {
 // deletes user only if same user is logged in
 const deleteUser = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
+  if (!email || !password)
+    return next(
+      new AppError("Both email and password fields are neccessary", 400)
+    );
   const user = await User.findOne({ email });
 
   if (!user) {
