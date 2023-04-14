@@ -17,7 +17,7 @@ const validateToken = asyncHandler(async (req, res, next) => {
       process.env.JWT_SECRET,
       asyncHandler(async (err, decoded) => {
         if (err) {
-          return next(new AppError("Please Login Again", 401)); //User is not Authorized
+          return next(new AppError("Please Login Again", 401));
         } else {
           const userExists = await User.findById(decoded._id);
           if (!userExists) {

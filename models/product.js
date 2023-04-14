@@ -28,10 +28,31 @@ const productSchema = new mongoose.Schema(
     image: {
       type: [String],
     },
+    // likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Like" }],
+    // dislikes: [{ type: mongoose.Schema.Types.ObjectId, ref: "DisLike" }],
+    // comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
   },
   {
     timestamps: true,
   }
 );
+
+productSchema.virtual("likes", {
+  refPath: "Like",
+  localField: "_id",
+  foreignField: "product_id",
+});
+
+productSchema.virtual("dislikes", {
+  refPath: "DisLike",
+  localField: "_id",
+  foreignField: "product_id",
+});
+
+productSchema.virtual("comments", {
+  refPath: "Comment",
+  localField: "_id",
+  foreignField: "product_id",
+});
 
 module.exports = new mongoose.model("Product", productSchema);

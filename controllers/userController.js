@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const AppError = require("../ErrorHandlers/AppError");
+const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const sendEmail = require("../config/nodemailer");
@@ -210,10 +211,29 @@ const resetPassword = asyncHandler(async (req, res, next) => {
 
 //////////////////////////////////////////////////////////////////////////
 
+const getUser = asyncHandler(async (req, res, next) => {
+  const id = req.params.id;
+  if (id) {
+    if (!mongoose.Types.ObjectId.isValid(id))
+      return next(new AppError("Id is not valid", 400));
+    const user = await User.findOne({ _id: id }, { password: 0 }, { __v: 0 });
+    if (!user) return next(new AppError("User is not registered yet", 404));
+    return res.status(200).json({
+      userWithId: user,
+    });
+  } else {
+    const user = await User.findById(req.user._id).select("-password -__v");
+    return res.status(200).json({
+      userWithLogin: user,
+    });
+  }
+});
+
 module.exports = {
   registerUser,
   loginUser,
   deleteUser,
   forgotPassword,
   resetPassword,
+  getUser,
 };

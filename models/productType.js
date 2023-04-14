@@ -12,6 +12,7 @@ const productTypeSchema = new mongoose.Schema({
     required: true,
     ref: "User",
   },
+  // frok and spawn, replica set, gridfs
 });
 
 module.exports = new mongoose.model("ProductType", productTypeSchema);

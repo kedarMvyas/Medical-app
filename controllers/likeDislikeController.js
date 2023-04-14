@@ -15,11 +15,6 @@ const like = asyncHandler(async (req, res, next) => {
   const product = await Product.findById(id);
   if (!product) return next(new AppError("Product does not exists", 403));
 
-  await Dislike.findOneAndDelete({
-    user_id: req.user.id,
-    product_id: product.id,
-  });
-
   const existingLike = await Like.findOne({
     user_id: req.user.id,
     product_id: product.id,
@@ -35,6 +30,12 @@ const like = asyncHandler(async (req, res, next) => {
   const created = await addLike.save();
 
   if (created) {
+    // deleting dislike
+    await Dislike.findOneAndDelete({
+      user_id: req.user.id,
+      product_id: product.id,
+    });
+
     res.json({
       msg: "U have successfully like the product",
     });
@@ -53,11 +54,6 @@ const disLike = asyncHandler(async (req, res, next) => {
 
   if (!product) return next(new AppError("Product does not exists", 403));
 
-  await Like.findOneAndDelete({
-    user_id: req.user.id,
-    product_id: product.id,
-  });
-
   const existingDislike = await Dislike.findOne({
     user_id: req.user.id,
     product_id: product.id,
@@ -75,6 +71,13 @@ const disLike = asyncHandler(async (req, res, next) => {
   const created = await addDislike.save();
 
   if (created) {
+    // deleting like
+
+    await Like.findOneAndDelete({
+      user_id: req.user.id,
+      product_id: product.id,
+    });
+
     res.json({
       msg: "U have successfully dislike the product",
     });
@@ -89,6 +92,8 @@ const disLike = asyncHandler(async (req, res, next) => {
 // also takes an optional query by user to limit likes
 const mostLikedProduct = asyncHandler(async (req, res, next) => {
   const query = req.query.limit || 1;
+  if (isNaN(query)) return next(new AppError("Query must be a Number"));
+
   const kedar = await Like.aggregate([
     {
       $group: {
@@ -141,6 +146,7 @@ const mostLikedProduct = asyncHandler(async (req, res, next) => {
 // also takes an optional query by user to limit dislikes
 const mostDislikedProduct = asyncHandler(async (req, res, next) => {
   const query = req.query.limit || 1;
+  if (isNaN(query)) return next(new AppError("Query must be a Number"));
   const kedar = await Dislike.aggregate([
     {
       $group: {

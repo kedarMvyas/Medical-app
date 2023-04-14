@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
+      lowercase: true,
       required: [true, "Please add the email"],
       unique: [true, "Email address already taken"],
     },

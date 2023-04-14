@@ -2,6 +2,9 @@ const asyncHandler = require("express-async-handler");
 const AppError = require("../ErrorHandlers/AppError");
 const Product = require("../models/product");
 const ProductType = require("../models/productType");
+const Like = require("../models/like");
+const Dislike = require("../models/disLike");
+const Comment = require("../models/comment");
 
 ////////////////////////////////////////////////////////////////
 
@@ -9,6 +12,7 @@ const ProductType = require("../models/productType");
 const createProduct = asyncHandler(async (req, res, next) => {
   const { name, productType, recommendedDose, price, expiryDate } = req.body;
   let typeID;
+  let userImage;
   const imageFiles = req.files["image"];
 
   const productExists = await Product.find({ name, user_id: req.user.id });
@@ -22,6 +26,12 @@ const createProduct = asyncHandler(async (req, res, next) => {
     typeID = typeExists._id;
   }
 
+  if (imageFiles) {
+    userImage = imageFiles.map((file) => file.filename);
+  } else {
+    userImage = undefined;
+  }
+
   const created = await Product.create({
     user_id: req.user.id,
     name,
@@ -29,7 +39,7 @@ const createProduct = asyncHandler(async (req, res, next) => {
     recommendedDose,
     price,
     expiryDate,
-    image: imageFiles.map((file) => file.filename),
+    image: userImage,
   });
   if (created) {
     return res.status(200).json({
@@ -107,6 +117,15 @@ const deleteProductById = asyncHandler(async (req, res, next) => {
 
   const done = await Product.deleteOne(productExists);
   if (done) {
+    const allLikes = await Like.find({ product_id: productExists._id });
+    await Like.deleteMany(allLikes);
+
+    const allDislikes = await Dislike.find({ product_id: productExists._id });
+    await Dislike.deleteMany(allDislikes);
+
+    const allComments = await Comment.find({ product_id: productExists._id });
+    await Comment.deleteMany(allComments);
+
     return res.status(200).json({
       msg: "Product have been successfully deleted",
     });
@@ -129,15 +148,34 @@ const getAllProducts = asyncHandler(async (req, res, next) => {
   }
 });
 
-////////////////////////////////////////////////////////////////
+/**
+ * gets most recently registered product
+ * also have a query option to limit resource shown
+ */
 
-// gets most recently registered product
-// also have a query option to limit resource shown
 const mostRecentProduct = asyncHandler(async (req, res, next) => {
   const query = req.query.limit || 1;
+  if (isNaN(query)) return next(new AppError("Query must be a Number"));
+
   const recentProduct = await Product.find({})
     .sort({ createdAt: -1 })
     .limit(+query);
+  // .populate({
+  //   path: "likes",
+  //   select: "user_id",
+  //   populate: { path: "user_id", select: "name" },
+  // })
+  // .populate({
+  //   path: "dislikes",
+  //   select: "user_id",
+  //   populate: { path: "user_id", select: "name" },
+  // })
+  // .populate({
+  //   path: "comments",
+  //   select: "user_id comment",
+  //   populate: { path: "user_id", select: "name" },
+  // });
+
 
   if (recentProduct) {
     return res.status(200).json({

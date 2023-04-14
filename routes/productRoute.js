@@ -1,7 +1,9 @@
-// this is products router
-// this stores all the routes which product property handles
-// there is routes for product, product types, product like-dislike, product comments
-// most liked product and also most disliked product
+/**
+ * this is products router
+ * this stores all the routes which product property handles
+ * there is routes for product, product types, product like-dislike, product comments
+ * most liked product and also most disliked product
+ */
 
 const express = require("express");
 const validateToken = require("../middlewares/validateToken");
