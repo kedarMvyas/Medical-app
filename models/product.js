@@ -28,29 +28,28 @@ const productSchema = new mongoose.Schema(
     image: {
       type: [String],
     },
-    // likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Like" }],
-    // dislikes: [{ type: mongoose.Schema.Types.ObjectId, ref: "DisLike" }],
-    // comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
   },
   {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
     timestamps: true,
   }
 );
 
 productSchema.virtual("likes", {
-  refPath: "Like",
+  ref: "Like",
   localField: "_id",
   foreignField: "product_id",
 });
 
 productSchema.virtual("dislikes", {
-  refPath: "DisLike",
+  ref: "DisLike",
   localField: "_id",
   foreignField: "product_id",
 });
 
 productSchema.virtual("comments", {
-  refPath: "Comment",
+  ref: "Comment",
   localField: "_id",
   foreignField: "product_id",
 });

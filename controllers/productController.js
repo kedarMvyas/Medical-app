@@ -13,7 +13,7 @@ const createProduct = asyncHandler(async (req, res, next) => {
   const { name, productType, recommendedDose, price, expiryDate } = req.body;
   let typeID;
   let userImage;
-  const imageFiles = req.files["image"];
+  const imageFiles = req.file["image"];
 
   const productExists = await Product.find({ name, user_id: req.user.id });
   if (productExists.length > 0)
@@ -42,7 +42,7 @@ const createProduct = asyncHandler(async (req, res, next) => {
     image: userImage,
   });
   if (created) {
-    return res.status(200).json({
+    return res.status(201).json({
       name,
       productType,
       msg: "Product created successfully",
@@ -58,7 +58,7 @@ const createProduct = asyncHandler(async (req, res, next) => {
 const updateProductById = asyncHandler(async (req, res, next) => {
   const id = req.params.id;
   let typeID;
-  const file = req.files;
+  const file = req.file;
   const { name, recommendedDose, price, productType, expiryDate } = req.body;
   if (!id) return next(new AppError("Product Id is not present", 400));
 
@@ -115,16 +115,17 @@ const deleteProductById = asyncHandler(async (req, res, next) => {
     return next(new AppError("User don't have access to delete product", 401));
   }
 
-  const done = await Product.deleteOne(productExists);
+  const done = await Product.findByIdAndDelete(id);
   if (done) {
     const allLikes = await Like.find({ product_id: productExists._id });
-    await Like.deleteMany(allLikes);
+    console.log(allLikes._id);
+    await Like.deleteMany({ id: allLikes._id });
 
     const allDislikes = await Dislike.find({ product_id: productExists._id });
-    await Dislike.deleteMany(allDislikes);
+    await Dislike.deleteMany({ id: allDislikes._id });
 
     const allComments = await Comment.find({ product_id: productExists._id });
-    await Comment.deleteMany(allComments);
+    await Comment.deleteMany({ id: allComments._id });
 
     return res.status(200).json({
       msg: "Product have been successfully deleted",
@@ -157,25 +158,44 @@ const mostRecentProduct = asyncHandler(async (req, res, next) => {
   const query = req.query.limit || 1;
   if (isNaN(query)) return next(new AppError("Query must be a Number"));
 
-  const recentProduct = await Product.find({})
+  const result = await Product.find({})
     .sort({ createdAt: -1 })
-    .limit(+query);
-  // .populate({
-  //   path: "likes",
-  //   select: "user_id",
-  //   populate: { path: "user_id", select: "name" },
-  // })
-  // .populate({
-  //   path: "dislikes",
-  //   select: "user_id",
-  //   populate: { path: "user_id", select: "name" },
-  // })
-  // .populate({
-  //   path: "comments",
-  //   select: "user_id comment",
-  //   populate: { path: "user_id", select: "name" },
-  // });
+    .limit(+query)
+    .populate({
+      path: "likes",
+      select: "user_id -_id -product_id",
+    })
+    .populate({
+      path: "dislikes",
+      select: "user_id -_id -product_id",
+    })
+    .populate({
+      path: "comments",
+      select: "user_id comment -_id -product_id",
+    })
+    .lean();
 
+  const recentProduct = result.map((product) => {
+    const {
+      likes,
+      dislikes,
+      image,
+      createdAt,
+      updatedAt,
+      __v,
+      comments,
+      expiryDate,
+      ...rest
+    } = product;
+    return {
+      ...rest,
+      image: image[0],
+      expiryDate,
+      likes: likes.map(({ user_id }) => user_id),
+      dislikes: dislikes.map(({ user_id }) => user_id),
+      comments,
+    };
+  });
 
   if (recentProduct) {
     return res.status(200).json({

@@ -29,6 +29,7 @@ router.patch(
   uploadPhoto,
   productController.updateProductById
 );
+
 router.delete(
   "/deleteProductById/:id",
   validateToken,
