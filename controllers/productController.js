@@ -6,8 +6,6 @@ const Like = require("../models/like");
 const Dislike = require("../models/disLike");
 const Comment = require("../models/comment");
 
-////////////////////////////////////////////////////////////////
-
 // creates product with image upload and other data
 const createProduct = asyncHandler(async (req, res, next) => {
   const { name, productType, recommendedDose, price, expiryDate } = req.body;
@@ -41,6 +39,7 @@ const createProduct = asyncHandler(async (req, res, next) => {
     expiryDate,
     image: userImage,
   });
+
   if (created) {
     return res.status(201).json({
       name,
@@ -51,8 +50,6 @@ const createProduct = asyncHandler(async (req, res, next) => {
     return next(new AppError("Something went wrong", 500));
   }
 });
-
-////////////////////////////////////////////////////////////////
 
 // can update data with an id in parameter
 const updateProductById = asyncHandler(async (req, res, next) => {
@@ -102,8 +99,6 @@ const updateProductById = asyncHandler(async (req, res, next) => {
   }
 });
 
-////////////////////////////////////////////////////////////////
-
 // delete product with id in a parameter
 const deleteProductById = asyncHandler(async (req, res, next) => {
   const id = req.params.id;
@@ -135,8 +130,6 @@ const deleteProductById = asyncHandler(async (req, res, next) => {
     return next(new AppError("Something went wrong", 500));
   }
 });
-
-////////////////////////////////////////////////////////////////
 
 // gets all products
 const getAllProducts = asyncHandler(async (req, res, next) => {
@@ -206,8 +199,6 @@ const mostRecentProduct = asyncHandler(async (req, res, next) => {
     return next(new AppError("Something went wrong", 500));
   }
 });
-
-////////////////////////////////////////////////////////////////
 
 module.exports = {
   createProduct,

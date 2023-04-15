@@ -33,8 +33,6 @@ const JWTokenGenerator = async (user) => {
   return accessToken;
 };
 
-//////////////////////////////////////////////////////////////////////////
-
 // register a user
 const registerUser = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -70,8 +68,6 @@ const registerUser = asyncHandler(async (req, res, next) => {
   }
 });
 
-//////////////////////////////////////////////////////////////////////////
-
 // login user with assigning a jwtoken
 const loginUser = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
@@ -101,8 +97,6 @@ const loginUser = asyncHandler(async (req, res, next) => {
   }
 });
 
-//////////////////////////////////////////////////////////////////////////
-
 // deletes user only if same user is logged in
 const deleteUser = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
@@ -131,8 +125,6 @@ const deleteUser = asyncHandler(async (req, res, next) => {
     }
   }
 });
-
-//////////////////////////////////////////////////////////////////////////
 
 // sends a email with a token for authentication to change password
 const forgotPassword = asyncHandler(async (req, res, next) => {
@@ -167,8 +159,6 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
     return next(new AppError({ err }, 500));
   }
 });
-
-//////////////////////////////////////////////////////////////////////////
 
 // checks forgotpassword token and then resets password
 const resetPassword = asyncHandler(async (req, res, next) => {
@@ -208,8 +198,6 @@ const resetPassword = asyncHandler(async (req, res, next) => {
     return next(new AppError("Something went wrong", 500));
   }
 });
-
-//////////////////////////////////////////////////////////////////////////
 
 const getUser = asyncHandler(async (req, res, next) => {
   const id = req.params.id;

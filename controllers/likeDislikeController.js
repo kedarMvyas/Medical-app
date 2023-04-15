@@ -6,8 +6,6 @@ const AppError = require("../ErrorHandlers/AppError");
 const Like = require("../models/like");
 const Dislike = require("../models/disLike");
 
-///////////////////////////////////////////////////////////////////////////
-
 // adds like on product by id
 const like = asyncHandler(async (req, res, next) => {
   const id = req.params.id;
@@ -43,8 +41,6 @@ const like = asyncHandler(async (req, res, next) => {
     return next(new AppError("Something went wrong", 500));
   }
 });
-
-///////////////////////////////////////////////////////////////////////////
 
 // adds dislike on product by id
 const disLike = asyncHandler(async (req, res, next) => {
@@ -85,8 +81,6 @@ const disLike = asyncHandler(async (req, res, next) => {
     return next(new AppError("Something went wrong", 500));
   }
 });
-
-///////////////////////////////////////////////////////////////////////////
 
 // calculates most liked product
 // also takes an optional query by user to limit likes
@@ -140,8 +134,6 @@ const mostLikedProduct = asyncHandler(async (req, res, next) => {
   }
 });
 
-///////////////////////////////////////////////////////////////////////////
-
 // calculates most disliked product
 // also takes an optional query by user to limit dislikes
 const mostDislikedProduct = asyncHandler(async (req, res, next) => {
@@ -192,30 +184,4 @@ const mostDislikedProduct = asyncHandler(async (req, res, next) => {
   }
 });
 
-///////////////////////////////////////////////////////////////////////////
-
 module.exports = { like, disLike, mostLikedProduct, mostDislikedProduct };
-
-///////////////////////////////////////////////////////////////////////////
-
-/*
- await Like.aggregate([
-    { $match: { isLiked: { $exists: true, $ne: [] } } },
-
-    {
-      $group: {
-        _id: "$_id",
-        totalLikes: { $sum: { $size: "$isLiked" } },
-        name: { $first: "$name" },
-        size: { $first: "$size" },
-        color: { $first: "$color" },
-        photo: { $first: "$photo" },
-        productType: { $first: "$productType" },
-      },
-    },
-
-    { $sort: { totalLikes: -1 } },
-
-    { $limit: 1 },
-  ]).exec();
- */

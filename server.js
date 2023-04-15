@@ -10,7 +10,7 @@ require("dotenv").config();
 const app = express();
 
 app.use(express.json());
-// app.use(mongoSanitize()); // used for NOSQL query injection attacks
+app.use(mongoSanitize()); // used for NOSQL query injection attacks
 
 dbConnect();
 

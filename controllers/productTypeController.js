@@ -3,8 +3,6 @@ const AppError = require("../ErrorHandlers/AppError");
 const ProductType = require("../models/productType");
 const Product = require("../models/product");
 
-////////////////////////////////////////////////////////////////
-
 // creates type of product
 const createProductType = asyncHandler(async (req, res, next) => {
   const name = req.body.name;
@@ -27,8 +25,6 @@ const createProductType = asyncHandler(async (req, res, next) => {
   }
 });
 
-////////////////////////////////////////////////////////////////
-
 // get all product types
 const getAllProductType = asyncHandler(async (req, res, next) => {
   const allProductTypes = await ProductType.find();
@@ -40,8 +36,6 @@ const getAllProductType = asyncHandler(async (req, res, next) => {
     return next(new AppError("Data does not exist", 400));
   }
 });
-
-////////////////////////////////////////////////////////////////
 
 // can delete product type only if there is no product registered on this type
 const deleteProductTypeById = asyncHandler(async (req, res, next) => {
@@ -79,8 +73,6 @@ const deleteProductTypeById = asyncHandler(async (req, res, next) => {
   }
 });
 
-////////////////////////////////////////////////////////////////
-
 // gets all product by product type
 const productsByProductType = asyncHandler(async (req, res, next) => {
   const name = req.body.name;
@@ -102,8 +94,6 @@ const productsByProductType = asyncHandler(async (req, res, next) => {
     allProductsByProductType,
   });
 });
-
-////////////////////////////////////////////////////////////////
 
 module.exports = {
   createProductType,
