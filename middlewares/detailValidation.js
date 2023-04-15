@@ -43,7 +43,6 @@ const detailValidation = asyncHandler(async (req, res, next) => {
   }
 
   const userEmail = await User.findOne({ email });
-
   if (userEmail) {
     return next(new AppError("Email is Already Registered", 400));
   }

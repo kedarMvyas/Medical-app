@@ -13,7 +13,7 @@ const createProduct = asyncHandler(async (req, res, next) => {
   const { name, productType, recommendedDose, price, expiryDate } = req.body;
   let typeID;
   let userImage;
-  const imageFiles = req.file["image"];
+  const imageFiles = req.files["image"];
 
   const productExists = await Product.find({ name, user_id: req.user.id });
   if (productExists.length > 0)
@@ -58,7 +58,8 @@ const createProduct = asyncHandler(async (req, res, next) => {
 const updateProductById = asyncHandler(async (req, res, next) => {
   const id = req.params.id;
   let typeID;
-  const file = req.file;
+  const file = req.files;
+
   const { name, recommendedDose, price, productType, expiryDate } = req.body;
   if (!id) return next(new AppError("Product Id is not present", 400));
 

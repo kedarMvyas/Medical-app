@@ -19,7 +19,7 @@ const uploadPhoto = (req, res, next) => {
     },
   });
 
-  // this varible is to check whether user uploads image only
+  // this variable is to check whether user uploads image only
   const multerFilter = (req, file, cb) => {
     if (file.mimetype.startsWith("image")) {
       cb(null, true);
@@ -31,9 +31,18 @@ const uploadPhoto = (req, res, next) => {
   const upload = multer({
     storage: multerStorage,
     fileFilter: multerFilter,
-  }).single("image");
+  }).fields([
+    { name: "name", maxCount: 10 },
+    { name: "productName", maxCount: 10 },
+    { name: "recommendedDose", maxCount: 10 },
+    { name: "price", maxCount: 10 },
+    { name: "expiryDate", maxCount: 10 },
+    { name: "image", maxCount: 10 },
+  ]);
 
-  // ;
+  /*
+.single("image");
+   */
 
   upload(req, res, (err) => {
     if (err) {

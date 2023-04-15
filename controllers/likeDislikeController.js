@@ -94,7 +94,7 @@ const mostLikedProduct = asyncHandler(async (req, res, next) => {
   const query = req.query.limit || 1;
   if (isNaN(query)) return next(new AppError("Query must be a Number"));
 
-  const kedar = await Like.aggregate([
+  const temp = await Like.aggregate([
     {
       $group: {
         _id: "$product_id",
@@ -131,9 +131,9 @@ const mostLikedProduct = asyncHandler(async (req, res, next) => {
     },
   ]).exec();
 
-  if (kedar) {
+  if (temp) {
     res.json({
-      output: kedar,
+      output: temp,
     });
   } else {
     return next(new AppError("Something went wrong", 500));
@@ -147,7 +147,7 @@ const mostLikedProduct = asyncHandler(async (req, res, next) => {
 const mostDislikedProduct = asyncHandler(async (req, res, next) => {
   const query = req.query.limit || 1;
   if (isNaN(query)) return next(new AppError("Query must be a Number"));
-  const kedar = await Dislike.aggregate([
+  const temp = await Dislike.aggregate([
     {
       $group: {
         _id: "$product_id",
@@ -183,9 +183,9 @@ const mostDislikedProduct = asyncHandler(async (req, res, next) => {
     },
   ]).exec();
 
-  if (kedar) {
+  if (temp) {
     res.json({
-      output: kedar,
+      output: temp,
     });
   } else {
     return next(new AppError("Something went wrong", 500));
