@@ -15,7 +15,7 @@ const createProduct = asyncHandler(async (req, res, next) => {
 
   const productExists = await Product.find({ name, user_id: req.user.id });
   if (productExists.length > 0)
-    return next(new AppError("Product Already Exists"));
+    return next(new AppError("Product Already Exists"), 405);
 
   const typeExists = await ProductType.findOne({ name: productType });
   if (!typeExists) {
@@ -26,8 +26,6 @@ const createProduct = asyncHandler(async (req, res, next) => {
 
   if (imageFiles) {
     userImage = imageFiles.filename;
-  } else {
-    userImage = undefined;
   }
 
   const created = await Product.create({
@@ -114,14 +112,13 @@ const deleteProductById = asyncHandler(async (req, res, next) => {
   const done = await Product.findByIdAndDelete(id);
   if (done) {
     const allLikes = await Like.find({ product_id: productExists._id });
-    console.log(allLikes._id);
-    await Like.deleteMany({ id: allLikes._id });
+    await Like.deleteMany({ _id: allLikes[0]._id });
 
     const allDislikes = await Dislike.find({ product_id: productExists._id });
-    await Dislike.deleteMany({ id: allDislikes._id });
+    await Dislike.deleteMany({ _id: allDislikes[0]._id });
 
     const allComments = await Comment.find({ product_id: productExists._id });
-    await Comment.deleteMany({ id: allComments._id });
+    await Comment.deleteMany({ _id: allComments[0]._id });
 
     return res.status(200).json({
       msg: "Product have been successfully deleted",
@@ -133,7 +130,43 @@ const deleteProductById = asyncHandler(async (req, res, next) => {
 
 // gets all products
 const getAllProducts = asyncHandler(async (req, res, next) => {
-  const allProducts = await Product.find();
+  const temp = await Product.find()
+    .populate({
+      path: "likes",
+      select: "user_id -_id -product_id",
+    })
+    .populate({
+      path: "dislikes",
+      select: "user_id -_id -product_id",
+    })
+    .populate({
+      path: "comments",
+      select: "user_id comment -_id -product_id",
+    })
+    .lean();
+
+  const allProducts = temp.map((product) => {
+    const {
+      likes,
+      dislikes,
+      image,
+      createdAt,
+      updatedAt,
+      __v,
+      comments,
+      expiryDate,
+      ...rest
+    } = product;
+    return {
+      ...rest,
+      image: image[0],
+      expiryDate,
+      likes: likes.map(({ user_id }) => user_id),
+      dislikes: dislikes.map(({ user_id }) => user_id),
+      comments,
+    };
+  });
+
   if (allProducts) {
     return res.status(200).json({
       allProducts,

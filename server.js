@@ -27,3 +27,13 @@ app.use(globalErrorHandler);
 app.listen(process.env.PORT, () => {
   console.log(`Listening on port: ${process.env.PORT}`);
 });
+
+// functionalities newly added (punit sir)
+
+// like dislike
+// query validation
+// new route getUser
+// image not compulsary
+// alternative of fields (upload photo)
+// delete user's like dislike and comment on products when deleting user/product
+// add likes, dislikes and comments in getMostRecentProduct & getAllProducts route

@@ -6,8 +6,10 @@ const bcrypt = require("bcrypt");
 const sendEmail = require("../config/nodemailer");
 const crypto = require("crypto");
 const User = require("../models/user");
+const Like = require("../models/like");
+const Dislike = require("../models/disLike");
+const Comment = require("../models/comment");
 
-////////////////////////////////////////////////////////////////
 // generates a random token for forgot password functionality
 const generateToken = () => {
   return crypto.randomBytes(32).toString("hex");
@@ -116,11 +118,19 @@ const deleteUser = asyncHandler(async (req, res, next) => {
   const passCompare = await bcrypt.compare(password, user.password);
 
   if (passCompare) {
+    const allLikes = await Like.find({ user_id: user._id });
+    await Like.deleteMany({ _id: allLikes[0]._id });
+
+    const allDislikes = await Dislike.find({ user_id: user._id });
+    await Dislike.deleteMany({ _id: allDislikes[0]._id });
+
+    const allComments = await Comment.find({ user_id: user._id });
+    await Comment.deleteMany({ _id: allComments[0]._id });
+
     const temp = await User.deleteOne(user);
     if (temp) {
       res.status(200).json({
         msg: "User deleted successfully",
-        accessToken: "",
       });
     }
   }
@@ -204,7 +214,9 @@ const getUser = asyncHandler(async (req, res, next) => {
   if (id) {
     if (!mongoose.Types.ObjectId.isValid(id))
       return next(new AppError("Id is not valid", 400));
+
     const user = await User.findOne({ _id: id }, { password: 0 }, { __v: 0 });
+
     if (!user) return next(new AppError("User is not registered yet", 404));
     return res.status(200).json({
       userWithId: user,
