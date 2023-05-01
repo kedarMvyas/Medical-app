@@ -1,0 +1,700 @@
+{
+	"info": {
+		"_postman_id": "a3f799fd-4af8-4b78-8a35-dac1cf3ef480",
+		"name": "Medical App",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "22504064"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "sign up",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "photo",
+								"value": "multipart/form-data",
+								"type": "default",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Kedar Vyas\",\r\n    \"email\": \"kedarvyas02@gmail.com\",\r\n    \"password\": \"Test123\",\r\n    \"passwordConfirm\": \"Test123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}users/registerUser",
+							"host": [
+								"{{URL}}users"
+							],
+							"path": [
+								"registerUser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"jwt\", pm.response.json().accessToken);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"vrajthakar@gmail.com\",\r\n    \"password\": \"Test123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}users/loginUser",
+							"host": [
+								"{{URL}}users"
+							],
+							"path": [
+								"loginUser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "NoSQL query injection",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"jwt\", pm.response.json().accessToken);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": {\"$ne\": null},\r\n  \"password\": \"Test123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}users/loginUser",
+							"host": [
+								"{{URL}}users"
+							],
+							"path": [
+								"loginUser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"kedarvyas02@gmail.com\",\r\n    \"password\": \"Test123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}users/deleteUser",
+							"host": [
+								"{{URL}}users"
+							],
+							"path": [
+								"deleteUser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "forgot password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"token\", pm.response.json().token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}users/forgotPassword",
+							"host": [
+								"{{URL}}users"
+							],
+							"path": [
+								"forgotPassword"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "reset password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"jwt\", pm.response.json().accessToken);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"Test123\",\r\n    \"passwordConfirm\": \"Test123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}users/resetPassword/{{token}}",
+							"host": [
+								"{{URL}}users"
+							],
+							"path": [
+								"resetPassword",
+								"{{token}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}users/getUser/6436c0ce56cfdcd05e19e9e9",
+							"host": [
+								"{{URL}}users"
+							],
+							"path": [
+								"getUser",
+								"6436c0ce56cfdcd05e19e9e9"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "create product",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "aspirin123",
+									"type": "text"
+								},
+								{
+									"key": "productType",
+									"value": "painkiller",
+									"type": "text"
+								},
+								{
+									"key": "recommendedDose",
+									"value": "1 per day",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "500",
+									"type": "text"
+								},
+								{
+									"key": "expiryDate",
+									"value": "2024-04-11",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/K:/Downloads/Medical Images/aspirin.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}products/createProduct",
+							"host": [
+								"{{URL}}products"
+							],
+							"path": [
+								"createProduct"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all products",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"_id\", pm.response.json().allProducts[0]._id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}products/getAllProducts",
+							"host": [
+								"{{URL}}products"
+							],
+							"path": [
+								"getAllProducts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update product",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "amoxicilin",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "productType",
+									"value": "painkiller",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "recommendedDose",
+									"value": "1 per day",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "price",
+									"value": "500",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "expiryDate",
+									"value": "2024-04-11",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/K:/Downloads/Medical Images/amoxicilin.jpg",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}products/updateProductById/643a7841503d00051dff57ac",
+							"host": [
+								"{{URL}}products"
+							],
+							"path": [
+								"updateProductById",
+								"643a7841503d00051dff57ac"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete product",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}products/deleteProductById/{{_id}}",
+							"host": [
+								"{{URL}}products"
+							],
+							"path": [
+								"deleteProductById",
+								"{{_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "most recent product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"_id\", pm.response.json().recentProduct[0]._id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}products/mostRecentProduct?limit=8",
+							"host": [
+								"{{URL}}products"
+							],
+							"path": [
+								"mostRecentProduct"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "8"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "like product",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}products/likeproduct/{{_id}}",
+							"host": [
+								"{{URL}}products"
+							],
+							"path": [
+								"likeproduct",
+								"{{_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "dislike product",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}products/dislikeproduct/{{_id}}",
+							"host": [
+								"{{URL}}products"
+							],
+							"path": [
+								"dislikeproduct",
+								"{{_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "comment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"comment\": \"This is a very GOOD product\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}products/comment/{{_id}}",
+							"host": [
+								"{{URL}}products"
+							],
+							"path": [
+								"comment",
+								"{{_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "most liked product",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}products/mostlikedproduct?limit=1000000",
+							"host": [
+								"{{URL}}products"
+							],
+							"path": [
+								"mostlikedproduct"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "1000000"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "most disliked product",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}products/mostdislikedproduct",
+							"host": [
+								"{{URL}}products"
+							],
+							"path": [
+								"mostdislikedproduct"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "2",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Product Type",
+			"item": [
+				{
+					"name": "Create Product Type",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"immunosuppressant\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}products/createProductType",
+							"host": [
+								"{{URL}}products"
+							],
+							"path": [
+								"createProductType"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all product types",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}products/getAllProductType",
+							"host": [
+								"{{URL}}products"
+							],
+							"path": [
+								"getAllProductType"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete product type",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}products/deleteProductTypeById/6436967b11a371740b3a1295",
+							"host": [
+								"{{URL}}products"
+							],
+							"path": [
+								"deleteProductTypeById",
+								"6436967b11a371740b3a1295"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "all products by product type",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"painkiller\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}products/productsByProductType",
+							"host": [
+								"{{URL}}products"
+							],
+							"path": [
+								"productsByProductType"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{jwt}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
