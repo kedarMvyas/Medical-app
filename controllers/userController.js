@@ -119,13 +119,15 @@ const deleteUser = asyncHandler(async (req, res, next) => {
 
   if (passCompare) {
     const allLikes = await Like.find({ user_id: user._id });
-    await Like.deleteMany({ _id: allLikes[0]._id });
+    if (allLikes.length > 0) await Like.deleteMany({ _id: allLikes[0]._id });
 
     const allDislikes = await Dislike.find({ user_id: user._id });
-    await Dislike.deleteMany({ _id: allDislikes[0]._id });
+    if (allDislikes.length > 0)
+      await Dislike.deleteMany({ _id: allDislikes[0]._id });
 
     const allComments = await Comment.find({ user_id: user._id });
-    await Comment.deleteMany({ _id: allComments[0]._id });
+    if (allComments.length > 0)
+      await Comment.deleteMany({ _id: allComments[0]._id });
 
     const temp = await User.deleteOne(user);
     if (temp) {
@@ -138,7 +140,11 @@ const deleteUser = asyncHandler(async (req, res, next) => {
 
 // sends a email with a token for authentication to change password
 const forgotPassword = asyncHandler(async (req, res, next) => {
-  const user = await User.findOne({ email: req.user.email });
+  const email = req.body.email;
+  if (!email) return next(new AppError("Email field is compulsary", 403));
+
+  const user = await User.findOne({ email });
+  if (!user) return next(new AppError("Email is not registered yet", 403));
 
   const resetToken = generateToken();
   const tokenDB = hashToken(resetToken);

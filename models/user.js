@@ -36,4 +36,6 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+userSchema.index({ passwordResetToken: 1 }, { expireAfterSeconds: 20 });
+
 module.exports = new mongoose.model("User", userSchema);
