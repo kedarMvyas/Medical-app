@@ -169,6 +169,22 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
       message: "Forgot Password Token sent to email!",
       token: resetToken,
     });
+
+    // setTimeout(
+    //   async (user) => {
+    //     user.passwordResetToken = undefined;
+    //     await user.save({ validateBeforeSave: false });
+    //     console.log("Password reset token deleted successfully");
+    //   },
+    //   10000,
+    //   user
+    // );
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    await delay(100000); // Wait for 10 mins
+    user.passwordResetToken = undefined;
+    await user.save({ validateBeforeSave: false });
+    console.log("Password reset token deleted successfully");
   } catch (err) {
     user.passwordResetToken = undefined;
     await user.save({ validateBeforeSave: false });
@@ -199,8 +215,14 @@ const resetPassword = asyncHandler(async (req, res, next) => {
 
   const hashedToken = hashToken(token);
   const user = await User.findOne({ passwordResetToken: hashedToken });
+  console.log(user);
   if (!user) {
-    return next(new AppError("User not found", 400));
+    return next(
+      new AppError(
+        "Reset Token must have expired, please click forgot password again",
+        401
+      )
+    );
   }
 
   user.password = password;
