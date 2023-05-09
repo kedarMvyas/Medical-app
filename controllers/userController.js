@@ -89,7 +89,6 @@ const loginUser = asyncHandler(async (req, res, next) => {
 
   if (passCompare) {
     const accessToken = await JWTokenGenerator(user);
-
     return res.status(200).json({
       msg: "You have successfully logged in :) ",
       accessToken,

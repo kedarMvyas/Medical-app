@@ -5,12 +5,14 @@ const mongoSanitize = require("express-mongo-sanitize");
 const AppError = require("./ErrorHandlers/AppError");
 const userRoute = require("./routes/userRoute");
 const productRoute = require("./routes/productRoute");
+const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
 
 app.use(express.json());
 app.use(mongoSanitize()); // used for NOSQL query injection attacks
+app.use(cors());
 
 dbConnect();
 
