@@ -16,6 +16,31 @@ app.use(cors());
 
 dbConnect();
 
+//////////////////////////////////////////////////////////// implementing sms send ///////////////////////////////////////////////////////////////
+// const accountSid = process.env.TWILIO_ACCOUNT_SID;
+// const authToken = process.env.TWILIO_AUTH_TOKEN;
+// const client = require("twilio")(accountSid, authToken);
+// client.messages
+//   .create({
+//     body: "Hello from Twilio",
+//     from: process.env.TWILIO_FROM_NUMBER,
+//     to: process.env.TWILIO_TO_NUMBER,
+//   })
+//   .then((message) => console.log(message.sid));
+
+//////////////////////////////////////////////////////// implementing, voice call (try) ///////////////////////////////////////////////////////////////
+// const accountSid = process.env.TWILIO_ACCOUNT_SID;
+// const authToken = process.env.TWILIO_AUTH_TOKEN;
+// const client = require("twilio")(accountSid, authToken);
+
+// client.calls
+//   .create({
+//     twiml: "<Response><Say>Ahoy, Basanti Madarchod haii!</Say></Response>",
+//     to: process.env.TWILIO_TO_NUMBER,
+//     from: process.env.TWILIO_FROM_NUMBER,
+//   })
+//   .then((call) => console.log(call.sid));
+
 app.use("/users", userRoute);
 app.use("/products", productRoute);
 
@@ -35,7 +60,7 @@ app.listen(process.env.PORT, () => {
 // like dislike
 // query validation
 // new route getUser
-// image not compulsary
-// alternative of fields (upload photo)
+// image not compulsory
+// alternative of "fields" (upload photo)
 // delete user's like dislike and comment on products when deleting user/product
 // add likes, dislikes and comments in getMostRecentProduct & getAllProducts route
